@@ -24,7 +24,7 @@ jobs:
         run: echo "commit_message=Update $(date +"%Y-%m-%d %H:%M:%S")" >> "$GITHUB_OUTPUT"
  
       - name: Apply Changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@master
         with:
          commit_message: ${{ steps.msg.outputs.commit_message }}
          branch: main
