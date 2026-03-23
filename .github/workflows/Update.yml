@@ -17,7 +17,9 @@ jobs:
         run: sudo timedatectl set-timezone "$TZ"
 
       - name: Get _worker.js
-        run: curl -sL "https://raw.githubusercontent.com/byJoey/cfnew/refs/heads/main/%E5%B0%91%E5%B9%B4%E4%BD%A0%E7%9B%B8%E4%BF%A1%E5%85%89%E5%90%97" -o ${GITHUB_WORKSPACE}/_worker.js
+        run: |
+          curl -sL "https://raw.githubusercontent.com/byJoey/cfnew/refs/heads/main/%E5%B0%91%E5%B9%B4%E4%BD%A0%E7%9B%B8%E4%BF%A1%E5%85%89%E5%90%97" -o ${GITHUB_WORKSPACE}/_worker.js
+          curl -sL "https://raw.githubusercontent.com/byJoey/cfnew/refs/heads/main/wrangler.toml" -o ${GITHUB_WORKSPACE}/wrangler.toml
 
       - name: Creat Message
         id: msg
@@ -28,9 +30,9 @@ jobs:
         with:
          commit_message: ${{ steps.msg.outputs.commit_message }}
          branch: main
-         commit_user_name: hubbylei
+         commit_user_name: cf-dl
          commit_user_email: ${{ secrets.EMAIL }}
-         commit_author: hubbylei <${{ secrets.EMAIL }}>
+         commit_author: cf-dl <${{ secrets.EMAIL }}>
 
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@main
