@@ -46,6 +46,7 @@ jobs:
         uses: softprops/action-gh-release@master
         with:
           tag_name: ${{ steps.zip.outputs.ver }}
+          body: ${{ steps.msg.outputs.commit_message }}
           files: worker.zip
 
       - name: Delete workflow runs
