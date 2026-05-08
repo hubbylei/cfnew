@@ -26,10 +26,27 @@ jobs:
         run: echo "commit_message=Update $(date +"%Y-%m-%d %H:%M:%S")" >> "$GITHUB_OUTPUT"
  
       - name: Apply Changes
+        id: commit
         uses: stefanzweifel/git-auto-commit-action@master
         with:
          commit_message: ${{ steps.msg.outputs.commit_message }}
          branch: main
+
+      - name: Generate ZIP
+        id: zip
+        if: steps.commit.outputs.changes_detected == 'true'
+        run: |
+          ver=$(curl -skL https://github.com/byJoey/cfnew/raw/refs/heads/main/%E6%98%8E%E6%96%87%E6%BA%90%E5%90%97 |grep "版本:" | sed 's,.*\(v[0-9]\+.[0-9]\+.[0-9]\+\),\1,')
+          zip worker.zip _worker.js wrangler.toml
+          echo "ver=${ver}" >> $GITHUB_OUTPUT
+          echo "status=success" >> $GITHUB_OUTPUT
+
+      - name: Publish Release
+        if: steps.zip.outputs.status == 'success'
+        uses: softprops/action-gh-release@master
+        with:
+          tag_name: ${{ steps.zip.outputs.ver }}
+          files: worker.zip
 
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@main
