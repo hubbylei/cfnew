@@ -111,6 +111,10 @@ jobs:
           EOF
           node obfuscate.js
 
+      - name: Clear
+        if: steps.compare.outputs.update == 'true'
+        run: rm -rf node_modules obfuscate.js package*
+
       - name: Creat Message
         if: steps.compare.outputs.update == 'true'
         id: msg
