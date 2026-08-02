@@ -132,8 +132,9 @@ jobs:
         id: zip
         if: steps.commit.outputs.changes_detected == 'true'
         run: |
-          ver=$(grep "版本:" ${GITHUB_WORKSPACE}/明文源码 | sed 's,.*\(v[0-9]\+.[0-9]\+.[0-9]\+.*\),\1,')
-          zip Pages${ver}-${{ steps.Gcode.outputs.hash }}.zip _worker.js
+          ver=$(grep "版本:" ${GITHUB_WORKSPACE}/明文源码 | sed 's,.*\([0-9]\+.[0-9]\+.[0-9]\+.*\),\1,')
+          echo ${ver}
+          zip -v Pages-${ver}-${{ steps.Gcode.outputs.hash }}.zip _worker.js
           echo "ver=${ver}" >> $GITHUB_OUTPUT
           echo "status=success" >> $GITHUB_OUTPUT
 
@@ -141,9 +142,9 @@ jobs:
         if: steps.zip.outputs.status == 'success'
         uses: softprops/action-gh-release@master
         with:
-          tag_name: ${{ steps.zip.outputs.ver }}-${{ steps.Gcode.outputs.hash }}
+          tag_name: Pages v${{ steps.zip.outputs.ver }}-${{ steps.Gcode.outputs.hash }}
           body: ${{ steps.msg.outputs.commit_message }}
-          files: Pages${{ steps.zip.outputs.ver }}-${{ steps.Gcode.outputs.hash }}.zip
+          files: Pages-${{ steps.zip.outputs.ver }}-${{ steps.Gcode.outputs.hash }}.zip
 
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@main
