@@ -131,7 +131,7 @@ jobs:
       - name: Get Ver
         id: ver
         run: |
-          ver=$(grep "版本:" ${GITHUB_WORKSPACE}/明文源码 | sed 's,.*\([0-9]\+.[0-9]\+.[0-9]\+.*\),\1,')
+          ver=$(grep "版本:" ${GITHUB_WORKSPACE}/明文源码 | sed 's,.*\([0-9]\+.[0-9]\+.[0-9]\+.*\),\1,' | sed ':a;s/[ \t]*\n//g;t')
           echo ${ver}
           echo "ver=${ver}" >> $GITHUB_OUTPUT
           echo "status=success" >> $GITHUB_OUTPUT
