@@ -140,16 +140,16 @@ jobs:
         id: zip
         if: steps.ver.outputs.status == 'success'
         run: |
-          zip -v Pages-${{steps.ver.outputs.ver}}-${{ steps.Gcode.outputs.hash }}.zip _worker.js
+          zip -v Pages-${{ steps.ver.outputs.ver }}-${{ steps.Gcode.outputs.hash }}.zip _worker.js
           echo "status=success" >> $GITHUB_OUTPUT
 
       - name: Publish Release
         if: steps.zip.outputs.status == 'success'
         uses: softprops/action-gh-release@master
         with:
-          tag_name: Pages v${{ steps.zip.outputs.ver }}-${{ steps.Gcode.outputs.hash }}
+          tag_name: Pages v${{ steps.ver.outputs.ver }}-${{ steps.Gcode.outputs.hash }}
           body: ${{ steps.msg.outputs.commit_message }}
-          files: Pages-${{ steps.zip.outputs.ver }}-${{ steps.Gcode.outputs.hash }}.zip
+          files: Pages-${{ steps.ver.outputs.ver }}-${{ steps.Gcode.outputs.hash }}.zip
 
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@main
