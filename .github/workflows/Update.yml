@@ -139,7 +139,9 @@ jobs:
       - name: Generate ZIP
         id: zip
         if: steps.ver.outputs.status == 'success'
-        run: zip -v Pages-${{steps.ver.outputs.ver}}-${{ steps.Gcode.outputs.hash }}.zip _worker.js
+        run: |
+          zip -v Pages-${{steps.ver.outputs.ver}}-${{ steps.Gcode.outputs.hash }}.zip _worker.js
+          echo "status=success" >> $GITHUB_OUTPUT
 
       - name: Publish Release
         if: steps.zip.outputs.status == 'success'
