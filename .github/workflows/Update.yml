@@ -147,7 +147,7 @@ jobs:
         if: steps.zip.outputs.status == 'success'
         uses: softprops/action-gh-release@master
         with:
-          tag_name: Pages v${{ steps.ver.outputs.ver }}-${{ steps.Gcode.outputs.hash }}
+          tag_name: v${{ steps.ver.outputs.ver }}-${{ steps.Gcode.outputs.hash }}
           body: ${{ steps.msg.outputs.commit_message }}
           files: Pages-${{ steps.ver.outputs.ver }}-${{ steps.Gcode.outputs.hash }}.zip
 
