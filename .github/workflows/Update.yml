@@ -23,7 +23,6 @@ jobs:
           cd /tmp/cfnew
           hash=$(git describe --always | awk -F "-" '{print $3}')
           cp -rvf 明文源吗 ${GITHUB_WORKSPACE}/明文源码
-          cp -rvf wrangler.toml ${GITHUB_WORKSPACE}/wrangler.toml
           echo "hash=${hash}" >> $GITHUB_OUTPUT
 
       - name: Get Latest
