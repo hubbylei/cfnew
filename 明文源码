@@ -1,5 +1,5 @@
-// CFnew - 终端 v2.9.9
-// 版本: v2.9.9 
+// CFnew - 终端 v3.0
+// 版本: v3.0 
 import { connect as 连接 } from 'cloudflare:sockets';
 const 基础64文本解码器 = new TextDecoder();
 function 解码64(文本) {
@@ -36,6 +36,11 @@ let 自定义应用层协议协商 = '';
 let 订阅转换接口 = 解码64('aHR0cHM6Ly91cmwudjEubWsvc3Vi');
 // 远程配置URL（硬编码）
 const 远程配置网址 = 'https://raw.githubusercontent.com/byJoey/test/refs/heads/main/tist.ini';
+// 地址库数据源（结构化 colo 数据，byJoey/cfnew-ipdb）
+const 地址库源 = 解码64('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2J5Sm9leS9jZm5ldy1pcGRiL21haW4v');
+let 地址库索引缓存 = null;
+let 地址库索引时间 = 0;
+const 地址库缓存期限 = 6 * 60 * 60 * 1000;
 let 启用优选域名 = true; // 优选域名默认关闭
 let 启用优选地址 = true;
 let 启用仓库优选 = true;
@@ -791,6 +796,39 @@ export default {
           }
         });
       }
+      if (网址698.pathname.includes('/api/ipdb')) {
+        const 路径部分列表A = 网址698.pathname.split('/').filter(参数值A => 参数值A);
+        const 接口索引A = 路径部分列表A.indexOf('api');
+        if (接口索引A > 0) {
+          const 路径值A = 路径部分列表A.slice(0, 接口索引A).join('/');
+          let 是否有效A = false;
+          if (自定义路径 && 自定义路径.trim()) {
+            const 清理自定义路径A = 自定义路径.trim().startsWith('/') ? 自定义路径.trim().substring(1) : 自定义路径.trim();
+            是否有效A = 路径值A === 清理自定义路径A;
+          } else {
+            是否有效A = 是否有效格式(路径值A) && 路径值A === 认证令牌;
+          }
+          if (是否有效A) {
+            return await 处理地址库接口(网址698);
+          }
+          return new Response(JSON.stringify({
+            error: '路径验证失败'
+          }), {
+            status: 403,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+        }
+        return new Response(JSON.stringify({
+          error: '无效的API路径'
+        }), {
+          status: 404,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      }
       if (网址698.pathname.includes('/api/preferred-ips')) {
         const 路径部分列表690 = 网址698.pathname.split('/').filter(参数值689 => 参数值689);
         const 接口索引 = 路径部分列表690.indexOf('api');
@@ -1024,8 +1062,8 @@ export default {
           const 语言值661 = 是否值664 ? 'fa-IR' : 'zh-CN';
           const 本地值660 = {
             zh: {
-              title: '终端 v2.9.9',
-              terminal: '终端 v2.9.9',
+              title: '终端 v3.0',
+              terminal: '终端 v3.0',
               congratulations: '恭喜你来到这',
               enterU: '请输入你U变量的值',
               enterD: '请输入你D变量的值',
@@ -1041,8 +1079,8 @@ export default {
               reenter: '请重新输入有效的UUID'
             },
             fa: {
-              title: 'ترمینال v2.9.9',
-              terminal: 'ترمینال v2.9.9',
+              title: 'ترمینال v3.0',
+              terminal: 'ترمینال v3.0',
               congratulations: 'تبریک می‌گوییم به شما',
               enterU: 'لطفا مقدار متغیر U خود را وارد کنید',
               enterD: 'لطفا مقدار متغیر D خود را وارد کنید',
@@ -4152,7 +4190,7 @@ async function 处理订阅值(请求241, 用户240 = null) {
         FI: '🇫🇮 芬兰',
         GB: '🇬🇧 英国'
       },
-      terminal: '终端 v2.9.9',
+      terminal: '终端 v3.0',
       githubProject: 'GitHub 项目',
       优选工具: '优选工具',
       autoDetectClient: '自动识别',
@@ -4304,7 +4342,7 @@ async function 处理订阅值(请求241, 用户240 = null) {
         FI: '🇫🇮 فنلاند',
         GB: '🇬🇧 بریتانیا'
       },
-      terminal: 'ترمینال v2.9.9',
+      terminal: 'ترمینال v3.0',
       githubProject: 'پروژه GitHub',
       优选工具: 'ابزار ترجیح IP',
       autoDetectClient: 'تشخیص خودکار',
@@ -5417,6 +5455,15 @@ async function 处理订阅值(请求241, 用户240 = null) {
                                 <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${翻译值.customIP}</label>
                                 <input type="text" id="customIP" placeholder="${是否值236 ? 'مثال: 1.2.3.4:443' : '例如: 1.2.3.4:443'}" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                 <small style="color: #7aa9c4; font-size: 0.85rem;">${是否值236 ? 解码64('2KLYr9ix2LMg2Ygg2b7ZiNix2KogUHJveHlJUCDYs9mB2KfYsdi024w=') : 解码64('6Ieq5a6a5LmJUHJveHlJUOWcsOWdgOWSjOerr+WPow==')}</small>
+                                <div style="margin-top: 10px; padding: 12px; background: rgba(0, 20, 40, 0.5); border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 6px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+                                        <span style="color: #00f0ff; font-size: 0.9rem;">🌐 ${是否值236 ? 'انتخاب بر اساس منطقه' : 解码64('5oyJ5Zyw5Yy65oyRIFByb3h5SVA=')}</span>
+                                        <span id="ipdbMeta" style="color: #7aa9c4; font-size: 0.8rem;"></span>
+                                    </div>
+                                    <input type="text" id="ipdbSearch" autocomplete="off" placeholder="${是否值236 ? 'جستجوی منطقه، مثلا: هنگ‌کنگ / توکیو / HKG' : 解码64('5pCc5Zyw5Yy677yM5q+U5aaCIOmmmea4ryAvIOS4nOS6rCAvIOe+juilvyAvIEhLRw==')}" style="width: 100%; padding: 9px; background: rgba(0, 0, 0, 0.8); border: 1px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 13px; box-sizing: border-box;">
+                                    <div id="ipdbList" style="margin-top: 8px; max-height: 190px; overflow-y: auto; display: none;"></div>
+                                    <div id="ipdbTip" style="margin-top: 8px; color: #7aa9c4; font-size: 0.82rem;"></div>
+                                </div>
                         </div>
                         <div style="margin-bottom: 15px;">
                                 <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${翻译值.preferredIPs}</label>
@@ -6758,6 +6805,122 @@ document.addEventListener('DOMContentLoaded', function () {
       同步联动界面状态();
     });
   }
+
+  // 地区选择器：从地址库拉索引，支持中文/英文/机场码搜索，选中后直接填进上面的地址框
+  (function 初始化地区选择器() {
+    const 搜索框 = document.getElementById('ipdbSearch');
+    const 列表框 = document.getElementById('ipdbList');
+    const 提示框 = document.getElementById('ipdbTip');
+    const 概要框 = document.getElementById('ipdbMeta');
+    const 目标输入 = document.getElementById('customIP');
+    if (!搜索框 || !列表框 || !目标输入) return;
+
+    const 是否波斯语 = ${是否值236 ? 'true' : 'false'};
+    let 索引数据 = null;
+    let 上次选中 = '';
+
+    function 提示(文本, 颜色) {
+      提示框.textContent = 文本 || '';
+      提示框.style.color = 颜色 || '#7aa9c4';
+    }
+
+    async function 加载索引() {
+      if (索引数据) return 索引数据;
+      提示(是否波斯语 ? 'در حال بارگذاری...' : '${解码64('5q2j5Zyo5Yqg6L295Zyw5Z2A5bqTLi4u')}');
+      const 响应 = await fetch(window.location.pathname + '/api/ipdb?a=index');
+      if (!响应.ok) throw new Error('HTTP ' + 响应.status);
+      索引数据 = await 响应.json();
+      提示('');
+      if (概要框 && 索引数据.total) {
+        概要框.textContent = 索引数据.total + (是否波斯语 ? ' IP' : ' IP') + ' / ' + 索引数据.coloCount + (是否波斯语 ? ' منطقه' : ' 个地区');
+      }
+      return 索引数据;
+    }
+
+    function 匹配(关键字) {
+      const 词 = 关键字.trim().toLowerCase();
+      const 全部 = (索引数据 && 索引数据.colos) || [];
+      if (!词) return 全部.slice(0, 12);
+      return 全部.filter(function (项) {
+        if (项.colo.toLowerCase().indexOf(词) === 0) return true;
+        for (let i = 0; i < 项.kw.length; i++) {
+          if (项.kw[i].toLowerCase().indexOf(词) !== -1) return true;
+        }
+        return false;
+      }).slice(0, 30);
+    }
+
+    function 渲染(结果) {
+      列表框.innerHTML = '';
+      if (!结果.length) {
+        列表框.style.display = 'none';
+        return;
+      }
+      结果.forEach(function (项) {
+        const 行 = document.createElement('div');
+        行.style.cssText = 'padding: 7px 9px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid rgba(0, 240, 255, 0.12); font-family: Courier New, monospace; font-size: 12.5px;';
+        const 左 = document.createElement('span');
+        左.style.color = '#00f0ff';
+        左.textContent = 项.flag + ' ' + 项.city + ' · ' + 项.country + ' (' + 项.colo + ')';
+        const 右 = document.createElement('span');
+        右.style.cssText = 'color: #7aa9c4; white-space: nowrap;';
+        右.textContent = 项.count + (是否波斯语 ? '' : ' ${解码64('5Liq5Y+v55So')}') + (项.verified ? ' · ' + 项.verified + (是否波斯语 ? '' : ' ${解码64('5bey5aSN5rWL')}') : '');
+        行.appendChild(左);
+        行.appendChild(右);
+        行.addEventListener('mouseenter', function () {
+          行.style.background = 'rgba(0, 240, 255, 0.12)';
+        });
+        行.addEventListener('mouseleave', function () {
+          行.style.background = 'transparent';
+        });
+        行.addEventListener('click', function () {
+          选择地区(项);
+        });
+        列表框.appendChild(行);
+      });
+      列表框.style.display = 'block';
+    }
+
+    async function 选择地区(项) {
+      上次选中 = 项.colo;
+      提示(是否波斯语 ? 'در حال دریافت...' : '${解码64('5q2j5Zyo5Yqg6L295Zyw5Z2A5bqTLi4u')}');
+      try {
+        const 响应 = await fetch(window.location.pathname + '/api/ipdb?a=colo&c=' + encodeURIComponent(项.colo) + '&n=50');
+        const 数据 = await 响应.json();
+        if (!数据.success || !数据.data || !数据.data.length) {
+          throw new Error(数据.error || 'no data');
+        }
+        const 命中 = 数据.data[Math.floor(Math.random() * 数据.data.length)];
+        目标输入.value = 命中.ip + ':' + 命中.port;
+        目标输入.dispatchEvent(new Event('input', { bubbles: true }));
+        列表框.style.display = 'none';
+        搜索框.value = 项.flag + ' ' + 项.city + ' (' + 项.colo + ')';
+        提示((是否波斯语 ? 'انجام شد: ' : '${解码64('5bey5aGr5YWl')} ') + 命中.ip + ':' + 命中.port + '  ·  ' + (是否波斯语 ? 'دوباره کلیک کنید' : '${解码64('5o2i5LiA5om5')}'), '#00ff9d');
+      } catch (错误) {
+        提示((是否波斯语 ? 'خطا: ' : '${解码64('5Zyw5Z2A5bqT6K+35rGC5aSx6LSl')}: ') + 错误.message, '#ff3860');
+      }
+    }
+
+    搜索框.addEventListener('focus', async function () {
+      try {
+        await 加载索引();
+        渲染(匹配(搜索框.value));
+      } catch (错误) {
+        提示((是否波斯语 ? 'خطا: ' : '${解码64('5Zyw5Z2A5bqT6K+35rGC5aSx6LSl')}: ') + 错误.message, '#ff3860');
+      }
+    });
+
+    搜索框.addEventListener('input', function () {
+      if (!索引数据) return;
+      上次选中 = '';
+      渲染(匹配(搜索框.value));
+    });
+
+    document.addEventListener('click', function (事件) {
+      if (事件.target === 搜索框 || 列表框.contains(事件.target)) return;
+      列表框.style.display = 'none';
+    });
+  })();
 
   const 自定义路径输入 = document.getElementById('customPath');
   if (自定义路径输入) {
@@ -8549,6 +8712,100 @@ async function 处理配置接口(请求54, 环境值 = {}) {
       'Content-Type': 'application/json'
     }
   });
+}
+// 地址库接口：worker 侧代拉 cfnew-ipdb，避免浏览器直连数据源被墙
+// ?a=index 拿索引（含中文映射）；?a=colo&c=HKG 拿单个数据中心的 IP 列表
+async function 处理地址库接口(网址) {
+  const 动作 = 网址.searchParams.get('a') || 'index';
+  try {
+    if (动作 === 'index') {
+      const 此刻 = Date.now();
+      if (地址库索引缓存 && 此刻 - 地址库索引时间 < 地址库缓存期限) {
+        return new Response(JSON.stringify(地址库索引缓存), {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Cache': 'HIT'
+          }
+        });
+      }
+      const 响应 = await fetch(地址库源 + 解码64('aW5kZXguanNvbg=='), {
+        cf: {
+          cacheTtl: 21600,
+          cacheEverything: true
+        }
+      });
+      if (!响应.ok) throw new Error('HTTP ' + 响应.status);
+      const 数据 = await 响应.json();
+      地址库索引缓存 = 数据;
+      地址库索引时间 = 此刻;
+      return new Response(JSON.stringify(数据), {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Cache': 'MISS'
+        }
+      });
+    }
+    if (动作 === 'colo') {
+      const 代码 = (网址.searchParams.get('c') || '').toUpperCase();
+      if (!/^[A-Z]{3}(-[A-Z]{3})?$/.test(代码)) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: 解码64('5peg5pWI55qE5Zyw5Yy65Luj56CB')
+        }), {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      }
+      const 上限 = Math.min(Math.max(parseInt(网址.searchParams.get('n')) || 50, 1), 500);
+      const 响应 = await fetch(地址库源 + 解码64('Y29sby8=') + 代码 + '.json', {
+        cf: {
+          cacheTtl: 21600,
+          cacheEverything: true
+        }
+      });
+      if (!响应.ok) throw new Error('HTTP ' + 响应.status);
+      const 数据 = await 响应.json();
+      const 全部 = Array.isArray(数据.ips) ? 数据.ips : [];
+      // 只回测过的那批优先，不够再用首轮结果补齐
+      const 已复测 = 全部.filter(项 => 项.v !== null && 项.v !== undefined);
+      const 候选 = 已复测.length >= 上限 ? 已复测 : 已复测.concat(全部.filter(项 => 项.v === null || 项.v === undefined));
+      return new Response(JSON.stringify({
+        success: true,
+        colo: 数据.colo,
+        city: 数据.city,
+        country: 数据.country,
+        flag: 数据.flag,
+        total: 全部.length,
+        verified: 已复测.length,
+        data: 候选.slice(0, 上限)
+      }), {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+    return new Response(JSON.stringify({
+      success: false,
+      error: '无效的操作'
+    }), {
+      status: 400,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  } catch (错误) {
+    return new Response(JSON.stringify({
+      success: false,
+      error: 解码64('5Zyw5Z2A5bqT6K+35rGC5aSx6LSl') + ': ' + 错误.message
+    }), {
+      status: 502,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  }
 }
 async function 处理优选地址列表接口(请求) {
   if (!键值存储) {
