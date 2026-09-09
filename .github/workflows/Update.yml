@@ -133,7 +133,7 @@ jobs:
         if: steps.compare.outputs.update == 'true'
         id: ver
         run: |
-          ver=$(grep "版本:" ${GITHUB_WORKSPACE}/明文源码 | awk '{print $3}')
+          ver=$(awk 'NR==2{print $0}' ${GITHUB_WORKSPACE}/明文源码 | awk '{print $3}')
           echo ${ver}
           echo "ver=${ver}" >> $GITHUB_OUTPUT
           echo "status=success" >> $GITHUB_OUTPUT
